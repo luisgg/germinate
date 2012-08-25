@@ -1,3 +1,10 @@
+germinate (2.8-0aurex2) precise; urgency=low
+
+  * aurex-multiple-dists+archive-exceptions.patch updated to skip
+    'empty' combinations of component+distribution in all the mirrors
+
+ -- Luis Antonio Garcia Gisbert <luisgg@gmail.com>  Sun, 26 Aug 2012 00:25:49 +0200
+
 germinate (2.8-0aurex1) precise; urgency=low
 
   * Added aurex-multiple-dists+archive-exceptions.patch

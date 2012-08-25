@@ -163,6 +163,7 @@ class TagFile(Archive):
             return open(fullname, "r")
 
         tag_files = []
+	some_mirrors_processed = False
         for mirror in mirrors:
             tag_file = None
             skip_this_repo = False
@@ -170,9 +171,12 @@ class TagFile(Archive):
                 if archive == mirror+","+dist+","+component or archive == mirror+","+dist+","+tagfile_type or archive == mirror+","+dist or archive == mirror:
                     skip_this_repo = True
                     break
+
             if skip_this_repo:
                 print("Archive exception: skipping", mirror+","+dist+","+component)
                 continue
+            else:
+                some_mirrors_processed = True
             for suffix in (".bz2", ".gz", ""):
                 try:
                     tag_file = _open_tag_file(mirror, suffix)
@@ -180,7 +184,7 @@ class TagFile(Archive):
                     break
                 except (IOError, OSError):
                     pass
-        if len(tag_files) == 0:
+        if some_mirrors_processed and len(tag_files) == 0:
             raise IOError("no %s files found" % tagfile_type)
         return tag_files
 
@@ -210,16 +214,21 @@ class TagFile(Archive):
                             yield (IndexType.PACKAGES, section)
                     finally:
                         tag_file.close()
-
-                sources = self._open_tag_files(
-                    self._source_mirrors, dirname, "Sources", dist, component,
-                    "source/Sources", self._archive_exceptions)
-                for tag_file in sources:
-                    try:
-                        for section in apt_pkg.TagFile(tag_file):
-                            yield (IndexType.SOURCES, section)
-                    finally:
-                        tag_file.close()
+                try:
+                    sources = self._open_tag_files(
+                        self._source_mirrors, dirname, "Sources", dist, component,
+                        "source/Sources", self._archive_exceptions)
+                except IOError:
+                        # can live without these
+                        _progress("Missing Source Packages file for %s "
+                                  "(ignoring)", component)
+                else:
+                    for tag_file in sources:
+                        try:
+                            for section in apt_pkg.TagFile(tag_file):
+                                yield (IndexType.SOURCES, section)
+                        finally:
+                            tag_file.close()
 
                 instpackages = ""
                 if self._installer_packages:
