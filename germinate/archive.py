@@ -163,7 +163,7 @@ class TagFile(Archive):
             return open(fullname, "r")
 
         tag_files = []
-	some_mirrors_processed = False
+        some_mirrors_processed = False
         for mirror in mirrors:
             tag_file = None
             skip_this_repo = False
