@@ -128,6 +128,15 @@ def main(argv):
     except (NoSectionError, NoOptionError):
         archive_base_default = None
 
+    try:
+        archive_dists = config.get(dist, 'dists').split()
+    except NoOptionError:
+        archive_dists = [dist]
+    try:
+       archive_exceptions = config.get(dist, 'archive_base/exceptions').split()
+    except (NoSectionError, NoOptionError):
+       archive_exceptions = []
+
     archive_base = {}
     for arch in architectures:
         try:
@@ -263,9 +272,9 @@ def main(argv):
         print("[%s] Downloading available package lists..." % architecture)
         germinator = Germinator(architecture)
         archive = germinate.archive.TagFile(
-            [dist], components, architecture,
+            archive_dists, components, architecture,
             archive_base[architecture], source_mirrors=archive_base_default,
-            cleanup=True)
+            cleanup=True, archive_exceptions=archive_exceptions)
         germinator.parse_archive(archive)
         debootstrap_base = set(debootstrap_packages(architecture))
 

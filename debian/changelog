@@ -1,3 +1,9 @@
+germinate (2.8-0aurex1) precise; urgency=low
+
+  * Added aurex-multiple-dists+archive-exceptions.patch
+
+ -- Luis Antonio Garcia Gisbert <luisgg@gmail.com>  Fri, 24 Aug 2012 11:55:58 +0200
+
 germinate (2.8) unstable; urgency=low
 
   * Build-depend on python-unittest2 so that the test suite works with
